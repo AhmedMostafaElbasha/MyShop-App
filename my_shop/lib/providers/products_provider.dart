@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../models/product.dart';
+import './product.dart';
 
 class ProductsProvider  with ChangeNotifier{
   List<Product> _products = [
@@ -37,6 +37,10 @@ class ProductsProvider  with ChangeNotifier{
           'https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Cast-Iron-Pan.jpg/1024px-Cast-Iron-Pan.jpg',
     ),
   ];
+
+  List<Product> get favoriteItems {
+    return _products.where((product) => product.isFavorite).toList();
+  }
 
   List<Product> get products {
     return [..._products];
