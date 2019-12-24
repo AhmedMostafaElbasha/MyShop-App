@@ -59,9 +59,7 @@ class ProductDetailsScreen extends StatelessWidget {
                 width: double.infinity,
                 child: Text(
                   loadedProduct.description,
-                  style: TextStyle(
-                    fontSize: 16
-                  ),
+                  style: TextStyle(fontSize: 16),
                   softWrap: true,
                   textAlign: TextAlign.center,
                 ),

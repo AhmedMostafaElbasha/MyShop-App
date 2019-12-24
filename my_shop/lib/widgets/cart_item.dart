@@ -52,12 +52,14 @@ class CartItem extends StatelessWidget {
               child: Padding(
                 padding: EdgeInsets.all(3),
                 child: FittedBox(
-                  child: Text('\$$price'),
+                  child: Text('\$${price.toStringAsFixed(2)}'),
                 ),
               ),
             ),
             title: Text(title),
-            subtitle: Text('\$${(price * quantity)}'),
+            subtitle: Text(
+              '\$${(price.toStringAsFixed(2) * quantity)}',
+            ),
             trailing: Text('$quantity x'),
           ),
         ),
