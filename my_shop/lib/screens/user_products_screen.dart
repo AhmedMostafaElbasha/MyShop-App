@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import '../widgets/user_product_item.dart';
 import '../providers/products_provider.dart';
 import '../widgets/app_drawer.dart';
+import '../screens/add_product_screen.dart';
 
 class UserProductsScreen extends StatelessWidget {
   static const routeName = '/user-products';
@@ -16,7 +17,9 @@ class UserProductsScreen extends StatelessWidget {
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.add),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.of(context).pushNamed(AddProductScreen.routeName);
+            },
           )
         ],
       ),
@@ -27,8 +30,10 @@ class UserProductsScreen extends StatelessWidget {
           builder: (context, productsData, child) => ListView.builder(
             itemCount: productsData.products.length,
             itemBuilder: (_, index) => UserProductItem(
+              id: productsData.products[index].id,
               title: productsData.products[index].title,
               imageUrl: productsData.products[index].imageUrl,
+              price: productsData.products[index].price,
             ),
           ),
         ),

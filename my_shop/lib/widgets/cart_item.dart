@@ -83,7 +83,38 @@ class CartItem extends StatelessWidget {
             subtitle: Text(
               '\$${(price * quantity).toStringAsFixed(2)}',
             ),
-            trailing: Text('$quantity x'),
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Container(
+                  width: 20,
+                  child: FlatButton(
+                    child: Text('+', style: TextStyle(fontSize: 30), textAlign: TextAlign.center,),
+                    textColor: Colors.green,
+                    onPressed: () {
+                      Provider.of<Cart>(context, listen: false).increaseQuantity(productId);
+                    },
+                  ),
+                ),
+                SizedBox(width: 7,),
+                Container(
+                  width: 30,
+                  child: FlatButton(
+                    child: Text('-', style: TextStyle(fontSize: 40),  textAlign: TextAlign.center,),
+                    textColor: Theme.of(context).errorColor,
+                    onPressed: () {
+                      if (quantity > 1) {
+                        Provider.of<Cart>(context, listen: false).decreaseQuantity(productId);
+                      } else {
+                        return;
+                      }      
+                    },
+                  ),
+                ),
+                SizedBox(width: 7,),
+                Text('$quantity x', style: TextStyle(fontSize: 14),),
+              ],
+            ),
           ),
         ),
       ),

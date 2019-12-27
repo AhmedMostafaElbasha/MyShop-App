@@ -88,6 +88,32 @@ class Cart with ChangeNotifier {
     notifyListeners();
   }
 
+  void decreaseQuantity(String productId) {
+    _items.update(
+        productId,
+        (existingCartItem) => CartItem(
+          id: existingCartItem.id,
+          title: existingCartItem.title,
+          price: existingCartItem.price,
+          quantity: existingCartItem.quantity - 1,
+        ),
+      );
+      notifyListeners();
+  }
+
+  void increaseQuantity(String productId) {
+    _items.update(
+        productId,
+        (existingCartItem) => CartItem(
+          id: existingCartItem.id,
+          title: existingCartItem.title,
+          price: existingCartItem.price,
+          quantity: existingCartItem.quantity + 1,
+        ),
+      );
+      notifyListeners();
+  }
+
   void clearCart() {
     _items = {};
     notifyListeners();
