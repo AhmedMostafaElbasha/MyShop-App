@@ -38,6 +38,7 @@ class UserProductItem extends StatelessWidget {
           ),
           trailing: Row(
             mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.end,
             children: <Widget>[
               IconButton(
                 icon: Icon(Icons.edit),
