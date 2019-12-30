@@ -90,7 +90,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
     }
   }
 
-  void _saveForm() {
+  Future<void> _saveForm() async {
     final isValid = _formKey.currentState.validate();
     if (!isValid) {
       return;
@@ -107,13 +107,14 @@ class _AddProductScreenState extends State<AddProductScreen> {
       });
       Navigator.of(context).pop();
     } else {
-      Provider.of<ProductsProvider>(context, listen: false)
-          .addProduct(_editedProduct)
-          .catchError((error) {
-        return showDialog(
+      try {
+        await Provider.of<ProductsProvider>(context, listen: false)
+            .addProduct(_editedProduct);
+      } catch (e) {
+        await showDialog(
           context: context,
           builder: (context) => AlertDialog(
-            title: Text('Something went wrong'),
+            title: Text('Error'),
             content: Text(
                 'Something went wrong while adding product. Please try again later.'),
             actions: <Widget>[
@@ -126,12 +127,12 @@ class _AddProductScreenState extends State<AddProductScreen> {
             ],
           ),
         );
-      }).then((_) {
+      } finally {
         setState(() {
           _isloading = false;
         });
         Navigator.of(context).pop();
-      });
+      }
     }
   }
 
