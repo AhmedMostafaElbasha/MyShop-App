@@ -100,12 +100,32 @@ class _AddProductScreenState extends State<AddProductScreen> {
       _isloading = true;
     });
     if (_editedProduct.id != null) {
-      Provider.of<ProductsProvider>(context, listen: false)
+      try {
+        await Provider.of<ProductsProvider>(context, listen: false)
           .updateProduct(_editedProduct.id, _editedProduct);
-      setState(() {
+      } catch (error) {
+        await showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text('Error'),
+            content: Text(
+                'Something went wrong while editing product. Please try again later.'),
+            actions: <Widget>[
+              FlatButton(
+                child: Text('OK'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              )
+            ],
+          ),
+        );
+      } finally {
+        setState(() {
         _isloading = false;
       });
       Navigator.of(context).pop();
+      }
     } else {
       try {
         await Provider.of<ProductsProvider>(context, listen: false)
@@ -127,7 +147,8 @@ class _AddProductScreenState extends State<AddProductScreen> {
             ],
           ),
         );
-      } finally {
+      } 
+      finally {
         setState(() {
           _isloading = false;
         });
