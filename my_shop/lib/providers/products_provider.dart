@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 import './product.dart';
+import '../models/http_exception.dart';
 
 class ProductsProvider with ChangeNotifier {
   List<Product> _products = [
@@ -98,7 +99,7 @@ class ProductsProvider with ChangeNotifier {
         imageUrl: product.imageUrl,
         id: json.decode(response.body)['name'],
       );
-      _products.insert(0, newProduct);
+      _products.add(newProduct);
       notifyListeners();
     } catch (error) {
       print(error);
@@ -127,11 +128,20 @@ class ProductsProvider with ChangeNotifier {
     }
   }
 
-  void removeProduct(String productId) {
-    // final url = 'https://myshop-99f16.firebaseio.com/products/$productId.json';
-    // final existingProductIndex = _products.indexWhere((product) => product.id == productId);
-    // var existingProduct = 
+  Future<void> removeProduct(String productId) async {
+    final url = 'https://myshop-99f16.firebaseio.com/products/$productId.json';
+    final existingProductIndex = _products.indexWhere((product) => product.id == productId);
+    var existingProduct = _products[existingProductIndex];
     _products.removeWhere((product) => product.id == productId);
     notifyListeners();
+    final response = await http.delete(url);
+
+    if (response.statusCode >= 400) {
+      _products.insert(existingProductIndex, existingProduct);
+      notifyListeners();
+      throw HttpException('Could not delete this product item');
+    }
+
+    existingProduct = null;
   }
 }

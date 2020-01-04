@@ -18,6 +18,7 @@ class UserProductItem extends StatelessWidget {
   });
   @override
   Widget build(BuildContext context) {
+    final scaffold = Scaffold.of(context);
     return Card(
       elevation: 5,
       child: Padding(
@@ -51,16 +52,24 @@ class UserProductItem extends StatelessWidget {
               IconButton(
                 icon: Icon(Icons.delete),
                 color: Theme.of(context).errorColor,
-                onPressed: () {
-                  Provider.of<ProductsProvider>(context, listen: false)
+                onPressed: () async {
+                  try {
+                    await Provider.of<ProductsProvider>(context, listen: false)
                       .removeProduct(id);
-                  Scaffold.of(context).hideCurrentSnackBar();
-                  Scaffold.of(context).showSnackBar(
+                  scaffold.hideCurrentSnackBar();
+                  scaffold.showSnackBar(
                     SnackBar(
                       content: Text('Product Item Deleted.'),
                       duration: Duration(seconds: 2),
                     ),
-                  );    
+                  );
+                  } catch (e) {
+                    scaffold.hideCurrentSnackBar();
+                    scaffold.showSnackBar(SnackBar(
+                      content: Text('Cannot delete this item'),
+                      duration: Duration(seconds: 2),
+                    ),);
+                  }
                 },
               ),
             ],
