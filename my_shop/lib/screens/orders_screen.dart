@@ -5,8 +5,29 @@ import '../providers/orders.dart' show Orders;
 import '../widgets/order_item.dart';
 import '../widgets/app_drawer.dart';
 
-class OrdersScreen extends StatelessWidget {
+class OrdersScreen extends StatefulWidget {
   static const routeName = '/orders';
+
+  @override
+  _OrdersScreenState createState() => _OrdersScreenState();
+}
+
+class _OrdersScreenState extends State<OrdersScreen> {
+  var _isLoading = false;
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    Future.delayed(Duration.zero).then((_) async {
+      setState(() {
+        _isLoading = true;
+      });
+      await Provider.of<Orders>(context, listen: false).fetchAndSetOrders();
+      setState(() {
+        _isLoading = false;
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -16,12 +37,31 @@ class OrdersScreen extends StatelessWidget {
         title: Text('Orders'),
       ),
       drawer: AppDrawer(),
-      body: ListView.builder(
-        itemCount: orderData.orders.length,
-        itemBuilder: (context, index) => OrderItem(
-          orderItem: orderData.orders[index],
-        ),
-      ),
+      body: _isLoading
+          ? Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  CircularProgressIndicator(),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Text(
+                    'Please Wait...',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                ],
+              ),
+            )
+          : ListView.builder(
+              itemCount: orderData.orders.length,
+              itemBuilder: (context, index) => OrderItem(
+                orderItem: orderData.orders[index],
+              ),
+            ),
     );
   }
 }

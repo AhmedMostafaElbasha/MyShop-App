@@ -73,25 +73,70 @@ class CartDetailBar extends StatelessWidget {
               ),
               backgroundColor: Theme.of(context).primaryColor,
             ),
-            FlatButton(
-              child: Text('PLACE ORDER'),
-              onPressed: () {
-                Provider.of<Orders>(context, listen: false).addOrder(
-                  cart.items.values.toList(),
-                  cart.totalAmount,
+            PlaceOrderButton(cart: cart)
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class PlaceOrderButton extends StatefulWidget {
+  const PlaceOrderButton({
+    Key key,
+    @required this.cart,
+  }) : super(key: key);
+
+  final Cart cart;
+
+  @override
+  _PlaceOrderButtonState createState() => _PlaceOrderButtonState();
+}
+
+class _PlaceOrderButtonState extends State<PlaceOrderButton> {
+  @override
+  Widget build(BuildContext context) {
+    var _isLoading = false;
+
+    return FlatButton(
+      child: !_isLoading ? Text('PLACE ORDER') : CircularProgressIndicator(),
+      onPressed: (widget.cart.totalAmount == 0 || _isLoading)
+          ? null
+          : () async {
+              setState(() {
+                _isLoading = true;
+              });
+
+              try {
+                await Provider.of<Orders>(context, listen: false).addOrder(
+                  widget.cart.items.values.toList(),
+                  widget.cart.totalAmount,
                 );
-                cart.clearCart();
+
+                setState(() {
+                  _isLoading = false;
+                });
+
+                widget.cart.clearCart();
+
                 Scaffold.of(context).hideCurrentSnackBar();
                 Scaffold.of(context).showSnackBar(SnackBar(
                   duration: Duration(seconds: 2),
                   content: Text('Order Placed Successfully'),
                 ));
-              },
-              textColor: Theme.of(context).primaryColor,
-            )
-          ],
-        ),
-      ),
+              } catch (error) {
+                setState(() {
+                  _isLoading = false;
+                });
+                
+                Scaffold.of(context).hideCurrentSnackBar();
+                Scaffold.of(context).showSnackBar(SnackBar(
+                  duration: Duration(seconds: 2),
+                  content: Text('Order Placement Failed'),
+                ));
+              }
+            },
+      textColor: Theme.of(context).primaryColor,
     );
   }
 }
