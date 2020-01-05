@@ -11,7 +11,7 @@ class ProductsGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final productsData = Provider.of<ProductsProvider>(context);
+    final productsData = Provider.of<ProductsProvider>(context, listen: false);
     final products = isFavorite ? productsData.favoriteItems : productsData.products;
 
     return GridView.builder(

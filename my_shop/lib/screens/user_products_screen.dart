@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:my_shop/widgets/error_state.dart';
+import 'package:my_shop/widgets/loading_state.dart';
 
 import 'package:provider/provider.dart';
 
@@ -31,19 +33,32 @@ class UserProductsScreen extends StatelessWidget {
       drawer: AppDrawer(),
       body: RefreshIndicator(
         onRefresh: () => refreshProducts(context),
-        child: Padding(
-          padding: EdgeInsets.all(8),
-          child: Consumer<ProductsProvider>(
-            builder: (context, productsData, child) => ListView.builder(
-              itemCount: productsData.products.length,
-              itemBuilder: (_, index) => UserProductItem(
-                id: productsData.products[index].id,
-                title: productsData.products[index].title,
-                imageUrl: productsData.products[index].imageUrl,
-                price: productsData.products[index].price,
-              ),
-            ),
-          ),
+        child: FutureBuilder(
+          future:  Provider.of<ProductsProvider>(context, listen: false).fetchAndSetProducts(),
+          builder: (context, dataSnapshot) {
+            if (dataSnapshot.connectionState == ConnectionState.waiting) {
+              return LoadingState();
+            } else {
+              if (dataSnapshot.error != null) {
+                return ErrorState();
+              } else {
+                return Padding(
+                  padding: EdgeInsets.all(8),
+                  child: Consumer<ProductsProvider>(
+                    builder: (context, productsData, child) => ListView.builder(
+                      itemCount: productsData.products.length,
+                      itemBuilder: (_, index) => UserProductItem(
+                        id: productsData.products[index].id,
+                        title: productsData.products[index].title,
+                        imageUrl: productsData.products[index].imageUrl,
+                        price: productsData.products[index].price,
+                      ),
+                    ),
+                  ),
+                );
+              }
+            }
+          },
         ),
       ),
     );

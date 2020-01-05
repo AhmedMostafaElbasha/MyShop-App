@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_shop/widgets/loading_state.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/product.dart' as productItem;
@@ -170,24 +171,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
         ],
       ),
       body: _isloading
-          ? Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  CircularProgressIndicator(),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Text(
-                    'Please Wait...',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                  ),
-                ],
-              ),
-            )
+          ? LoadingState()
           : Padding(
               padding: EdgeInsets.all(16),
               child: Form(

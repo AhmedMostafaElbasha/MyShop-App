@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_shop/widgets/loading_state.dart';
 import 'package:provider/provider.dart';
 
 import '../widgets/products_grid.dart';
@@ -95,24 +96,7 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
       ),
       drawer: AppDrawer(),
       body: _isLoading
-          ? Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  CircularProgressIndicator(),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Text(
-                    'Please Wait...',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                  ),
-                ],
-              ),
-            )
+          ? LoadingState()
           : new ProductsGrid(
               isFavorite: _showOnlyFavorites,
             ),
