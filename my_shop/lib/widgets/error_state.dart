@@ -17,8 +17,9 @@ class ErrorState extends StatelessWidget {
           ),
           Text(
             'Error while loading the data, Please try again later..',
+            textAlign: TextAlign.center,
             style: TextStyle(
-              fontSize: 16,
+              fontSize: 14,
               fontWeight: FontWeight.bold,
             ),
           ),

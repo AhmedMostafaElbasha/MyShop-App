@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:my_shop/models/http_exception.dart';
 
 import '../providers/cart.dart';
 
@@ -28,7 +29,8 @@ class Orders with ChangeNotifier {
 
   Future<void> fetchAndSetOrders() async {
     const url = 'https://myshop-99f16.firebaseio.com/orders.json';
-    final response = await http.get(url);
+    try {
+      final response = await http.get(url);
     final List<OrderItem> loadedOrders = [];
     final extractedData = json.decode(response.body) as Map<String, dynamic>;
     if (extractedData == null) {
@@ -51,6 +53,10 @@ class Orders with ChangeNotifier {
     });
     _orders = loadedOrders.reversed.toList();
     notifyListeners();
+    } catch (error) {
+      throw HttpException('cannot fetch the orders data.');
+    }
+    
   }
 
   Future<void> addOrder(List<CartItem> cartProducts, double total) async {
