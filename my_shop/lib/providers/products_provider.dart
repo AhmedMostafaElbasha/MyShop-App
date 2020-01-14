@@ -42,6 +42,10 @@ class ProductsProvider with ChangeNotifier {
     // ),
   ];
 
+  final String authToken;
+
+  ProductsProvider(this.authToken, this._products);
+
   List<Product> get favoriteItems {
     return _products.where((product) => product.isFavorite).toList();
   }
@@ -55,7 +59,7 @@ class ProductsProvider with ChangeNotifier {
   }
 
   Future<void> fetchAndSetProducts() async {
-    const url = 'https://myshop-99f16.firebaseio.com/products.json';
+    final url = 'https://myshop-99f16.firebaseio.com/products.json?auth=$authToken';
     try {
       final response = await http.get(url);
       final extractedData = json.decode(response.body) as Map<String, dynamic>;
@@ -81,7 +85,7 @@ class ProductsProvider with ChangeNotifier {
   }
 
   Future<void> addProduct(Product product) async {
-    const url = 'https://myshop-99f16.firebaseio.com/products.json';
+    final url = 'https://myshop-99f16.firebaseio.com/products.json?auth=$authToken';
     try {
       final response = await http.post(
         url,
@@ -113,7 +117,7 @@ class ProductsProvider with ChangeNotifier {
   Future<void> updateProduct(String productId, Product newProduct) async {
     var index = _products.indexWhere((product) => product.id == productId);
     if (index >= 0) {
-      final url = 'https://myshop-99f16.firebaseio.com/products/$productId.json';
+      final url = 'https://myshop-99f16.firebaseio.com/products/$productId.json?auth=$authToken';
       try {
         await http.patch(url, body: json.encode({
         'description': newProduct.description,
@@ -132,7 +136,7 @@ class ProductsProvider with ChangeNotifier {
   }
 
   Future<void> removeProduct(String productId) async {
-    final url = 'https://myshop-99f16.firebaseio.com/products/$productId.json';
+    final url = 'https://myshop-99f16.firebaseio.com/products/$productId.json?auth=$authToken';
     final existingProductIndex = _products.indexWhere((product) => product.id == productId);
     var existingProduct = _products[existingProductIndex];
     _products.removeWhere((product) => product.id == productId);
