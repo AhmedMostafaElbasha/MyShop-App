@@ -43,8 +43,9 @@ class ProductsProvider with ChangeNotifier {
   ];
 
   final String authToken;
+  final String userId;
 
-  ProductsProvider(this.authToken, this._products);
+  ProductsProvider(this.authToken, this._products, this.userId);
 
   List<Product> get favoriteItems {
     return _products.where((product) => product.isFavorite).toList();
@@ -59,14 +60,19 @@ class ProductsProvider with ChangeNotifier {
   }
 
   Future<void> fetchAndSetProducts() async {
-    final url = 'https://myshop-99f16.firebaseio.com/products.json?auth=$authToken';
+    var url =
+        'https://myshop-99f16.firebaseio.com/products.json?auth=$authToken';
     try {
       final response = await http.get(url);
       final extractedData = json.decode(response.body) as Map<String, dynamic>;
       final List<Product> loadedProducts = [];
-      if(extractedData ==  null) {
+      if (extractedData == null) {
         return;
       }
+      url =
+          'https://myshop-99f16.firebaseio.com/userFavorites/$userId.json?auth=$authToken';
+      final favoriteResponse = await http.get(url);
+      final favoriteData = json.decode(favoriteResponse.body);
       extractedData.forEach((productId, productData) {
         loadedProducts.add(Product(
           id: productId,
@@ -74,7 +80,7 @@ class ProductsProvider with ChangeNotifier {
           description: productData['description'],
           price: productData['price'],
           imageUrl: productData['imageUrl'],
-          isFavorite: productData['isFavorite'],
+          isFavorite: favoriteData == null ? false : favoriteData[productId] ?? false,
         ));
       });
       _products = loadedProducts;
@@ -85,7 +91,8 @@ class ProductsProvider with ChangeNotifier {
   }
 
   Future<void> addProduct(Product product) async {
-    final url = 'https://myshop-99f16.firebaseio.com/products.json?auth=$authToken';
+    final url =
+        'https://myshop-99f16.firebaseio.com/products.json?auth=$authToken';
     try {
       final response = await http.post(
         url,
@@ -95,7 +102,6 @@ class ProductsProvider with ChangeNotifier {
             'description': product.description,
             'imageUrl': product.imageUrl,
             'price': product.price,
-            'isFavorite': product.isFavorite,
           },
         ),
       );
@@ -117,16 +123,18 @@ class ProductsProvider with ChangeNotifier {
   Future<void> updateProduct(String productId, Product newProduct) async {
     var index = _products.indexWhere((product) => product.id == productId);
     if (index >= 0) {
-      final url = 'https://myshop-99f16.firebaseio.com/products/$productId.json?auth=$authToken';
+      final url =
+          'https://myshop-99f16.firebaseio.com/products/$productId.json?auth=$authToken';
       try {
-        await http.patch(url, body: json.encode({
-        'description': newProduct.description,
-        'title': newProduct.title,
-        'price': newProduct.price,
-        'imageUrl': newProduct.imageUrl,
-      }));
-      _products[index] = newProduct;
-      notifyListeners();
+        await http.patch(url,
+            body: json.encode({
+              'description': newProduct.description,
+              'title': newProduct.title,
+              'price': newProduct.price,
+              'imageUrl': newProduct.imageUrl,
+            }));
+        _products[index] = newProduct;
+        notifyListeners();
       } catch (error) {
         throw error;
       }
@@ -136,8 +144,10 @@ class ProductsProvider with ChangeNotifier {
   }
 
   Future<void> removeProduct(String productId) async {
-    final url = 'https://myshop-99f16.firebaseio.com/products/$productId.json?auth=$authToken';
-    final existingProductIndex = _products.indexWhere((product) => product.id == productId);
+    final url =
+        'https://myshop-99f16.firebaseio.com/products/$productId.json?auth=$authToken';
+    final existingProductIndex =
+        _products.indexWhere((product) => product.id == productId);
     var existingProduct = _products[existingProductIndex];
     _products.removeWhere((product) => product.id == productId);
     notifyListeners();
