@@ -12,16 +12,16 @@ class LoadingState extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             CircularProgressIndicator(),
-            SizedBox(
-              height: 10,
-            ),
-            Text(
-              'Please Wait...',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
-              ),
-            ),
+            // SizedBox(
+            //   height: 10,
+            // ),
+            // Text(
+            //   'Please Wait...',
+            //   style: TextStyle(
+            //     fontWeight: FontWeight.bold,
+            //     fontSize: 16,
+            //   ),
+            // ),
           ],
         ),
       );

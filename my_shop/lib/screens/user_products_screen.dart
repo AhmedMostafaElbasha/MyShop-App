@@ -12,12 +12,14 @@ import '../screens/add_product_screen.dart';
 class UserProductsScreen extends StatelessWidget {
   static const routeName = '/user-products';
 
-  Future<void> refreshProducts(BuildContext context) async {
-    await Provider.of<ProductsProvider>(context).fetchAndSetProducts();
+  Future<void> _refreshProducts(BuildContext context) async {
+    await Provider.of<ProductsProvider>(context, listen: false)
+        .fetchAndSetProducts(true);
   }
 
   @override
   Widget build(BuildContext context) {
+    print('rebuilding');
     return Scaffold(
       appBar: AppBar(
         title: Text('Products'),
@@ -31,35 +33,30 @@ class UserProductsScreen extends StatelessWidget {
         ],
       ),
       drawer: AppDrawer(),
-      body: RefreshIndicator(
-        onRefresh: () => refreshProducts(context),
-        child: FutureBuilder(
-          future:  Provider.of<ProductsProvider>(context, listen: false).fetchAndSetProducts(),
-          builder: (context, dataSnapshot) {
-            if (dataSnapshot.connectionState == ConnectionState.waiting) {
-              return LoadingState();
-            } else {
-              if (dataSnapshot.error != null) {
-                return ErrorState();
-              } else {
-                return Padding(
-                  padding: EdgeInsets.all(8),
-                  child: Consumer<ProductsProvider>(
-                    builder: (context, productsData, child) => ListView.builder(
-                      itemCount: productsData.products.length,
-                      itemBuilder: (_, index) => UserProductItem(
-                        id: productsData.products[index].id,
-                        title: productsData.products[index].title,
-                        imageUrl: productsData.products[index].imageUrl,
-                        price: productsData.products[index].price,
+      body: FutureBuilder(
+        future: _refreshProducts(context),
+        builder: (context, dataSnapshot) =>
+            dataSnapshot.connectionState == ConnectionState.waiting
+                ? LoadingState()
+                : dataSnapshot.error != null
+                    ? ErrorState()
+                    : RefreshIndicator(
+                        onRefresh: () => _refreshProducts(context),
+                        child: Consumer<ProductsProvider>(
+                          builder: (context, productsData, _) => Padding(
+                            padding: EdgeInsets.all(8),
+                            child: ListView.builder(
+                              itemCount: productsData.products.length,
+                              itemBuilder: (_, index) => UserProductItem(
+                                id: productsData.products[index].id,
+                                title: productsData.products[index].title,
+                                imageUrl: productsData.products[index].imageUrl,
+                                price: productsData.products[index].price,
+                              ),
+                            ),
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                );
-              }
-            }
-          },
-        ),
       ),
     );
   }
