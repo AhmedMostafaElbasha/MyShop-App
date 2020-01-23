@@ -306,7 +306,7 @@ class _AuthCardState extends State<AuthCard>
                     opacity: _opacityAnimation,
                     child: SlideTransition(
                       position: _slideAnimation,
-                                          child: TextFormField(
+                      child: TextFormField(
                         enabled: _authMode == AuthMode.Signup,
                         decoration:
                             InputDecoration(labelText: 'Confirm Password'),
